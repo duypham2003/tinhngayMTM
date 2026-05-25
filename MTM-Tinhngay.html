@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mạnh Trinh Music & Arts - Tính Lịch Khóa Học</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #e9ecef; padding: 20px; display: flex; justify-content: center; }
+        .container { width: 100%; max-width: 450px; background: #ffffff; padding: 30px 25px; border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
+        .logo-container { text-align: center; margin-bottom: 15px; }
+        .logo-container img { max-width: 160px; height: auto; border-radius: 8px; }
+        h2 { text-align: center; color: #1a233a; margin-top: 0; margin-bottom: 25px; font-size: 22px; text-transform: uppercase; letter-spacing: 1px; }
+        .form-group { margin-bottom: 18px; }
+        label { display: block; font-weight: 600; margin-bottom: 8px; color: #333; }
+        input[type="date"], select { width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 6px; box-sizing: border-box; font-size: 15px; }
+        .checkbox-group { display: flex; flex-wrap: wrap; gap: 12px; }
+        .checkbox-group label { font-weight: normal; display: flex; align-items: center; gap: 5px; cursor: pointer; }
+        button { width: 100%; padding: 12px; background-color: #c5a059; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background-color 0.3s; margin-top: 10px; }
+        button:hover { background-color: #a38242; }
+        .result { margin-top: 20px; padding: 15px; border-radius: 6px; text-align: center; font-size: 16px; font-weight: bold; display: none; }
+        .result.success { background-color: #eafaf1; color: #1d8348; border: 1px solid #a9dfbf; }
+        .result.error { background-color: #fdedec; color: #c0392b; border: 1px solid #f5b7b1; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="logo-container">
+        <img src="logo.png" alt="Mạnh Trinh Music & Arts">
+    </div>
+
+    <h2>Tính Lịch Khóa Học</h2>
+    
+    <div class="form-group">
+        <label for="startDate">Ngày bắt đầu:</label>
+        <input type="date" id="startDate">
+    </div>
+
+    <div class="form-group">
+        <label for="sessions">Tổng số buổi:</label>
+        <select id="sessions">
+            <option value="4">4 buổi</option>
+            <option value="6">6 buổi</option>
+            <option value="8">8 buổi</option>
+            <option value="12">12 buổi</option>
+            <option value="24">24 buổi</option>
+            <option value="36">36 buổi</option>
+            <option value="48">48 buổi</option>
+            <option value="56">56 buổi</option>
+            <option value="64">64 buổi</option>
+            <option value="72">72 buổi</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Lịch học trong tuần (chọn nhiều):</label>
+        <div class="checkbox-group">
+            <label><input type="checkbox" name="days" value="1"> T2</label>
+            <label><input type="checkbox" name="days" value="2"> T3</label>
+            <label><input type="checkbox" name="days" value="3"> T4</label>
+            <label><input type="checkbox" name="days" value="4"> T5</label>
+            <label><input type="checkbox" name="days" value="5"> T6</label>
+            <label><input type="checkbox" name="days" value="6"> T7</label>
+            <label><input type="checkbox" name="days" value="0"> CN</label>
+        </div>
+    </div>
+
+    <button onclick="calculateEndDate()">TÍNH NGÀY KẾT THÚC</button>
+
+    <div class="result" id="resultBox"></div>
+</div>
+
+<script>
+    function calculateEndDate() {
+        const startDateStr = document.getElementById('startDate').value;
+        const sessionsCount = parseInt(document.getElementById('sessions').value);
+        const checkboxes = document.querySelectorAll('input[name="days"]:checked');
+        const selectedDays = Array.from(checkboxes).map(cb => parseInt(cb.value)); 
+
+        const resultBox = document.getElementById('resultBox');
+        resultBox.classList.remove('success', 'error');
+
+        if (!startDateStr || selectedDays.length === 0) {
+            resultBox.style.display = 'block';
+            resultBox.classList.add('error');
+            resultBox.innerText = "Vui lòng chọn ngày bắt đầu và ít nhất 1 ngày học!";
+            return;
+        }
+
+        let currentDate = new Date(startDateStr);
+        let sessionsCompleted = 0;
+
+        while (sessionsCompleted < sessionsCount) {
+            if (selectedDays.includes(currentDate.getDay())) {
+                sessionsCompleted++;
+            }
+            if (sessionsCompleted < sessionsCount) {
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+        }
+
+        const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+        resultBox.style.display = 'block';
+        resultBox.classList.add('success');
+        resultBox.innerHTML = `Ngày kết thúc dự kiến:<br><span style="font-size: 1.2em; color: #145a32;">${currentDate.toLocaleDateString('vi-VN', options)}</span>`;
+    }
+</script>
+
+</body>
+</html>
